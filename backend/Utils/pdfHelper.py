@@ -3,18 +3,34 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 
 
-loader = PyMuPDFLoader("../data/pdfs/mathematics-10-01555-v2.pdf")
-docs = loader.load()
+
+def pdf_text2Vec(pdf_path:str, 
+                 db:str = "chromaDB", #TODO: add db connection
+                 model_transformer:SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')):
+    """
+    Load a PDF file and convert to vector embeddings.
+    """
+    loader = PyMuPDFLoader(pdf_path)
+    docs = loader.load()
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    chunks = splitter.split_documents(docs)
+
+    ## Word embeddings
+    model = model_transformer
+    vector_embeddings = []
+    
+    # Iterate over the chunks and compute embeddings
+    for i, chunk in enumerate(chunks):
+        text = chunk.metadata["subject"]
+        embedding = model.encode(text)
+
+        vector_embeddings.append(embedding)
 
 
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-chunks = splitter.split_documents(docs)
+    return vector_embeddings
 
-## Word embeddings
-model = SentenceTransformer('all-MiniLM-L6-v2')
 
-text = chunks[1].metadata["subject"]
-embedding = model.encode(text)
 
-## Insert into chromaDB
-
+if __name__ == "__main__":
+    pdf_text2Vec("../data/pdfs/mathematics-10-01555-v2.pdf")
