@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer
 
 
 def pdf_text2Vec(pdf_path:str, 
-                 db:str = "chromaDB", #TODO: add db connection
                  model_transformer:SentenceTransformer = SentenceTransformer('all-MiniLM-L6-v2')):
     """
     Load a PDF file and convert to vector embeddings.
@@ -33,4 +32,4 @@ def pdf_text2Vec(pdf_path:str,
 
 
 if __name__ == "__main__":
-    pdf_text2Vec("../data/pdfs/mathematics-10-01555-v2.pdf")
+    print(len(pdf_text2Vec("../data/pdfs/mathematics-10-01555-v2.pdf")))
