@@ -1,15 +1,28 @@
 import chromadb
+from sentence_transformers import SentenceTransformer
+
+
+def create_embeddings(text:str, model_name:str="all-MiniLM-L6-v2"):
+    """
+    Create embeddings for a given text using the specified SentenceTransformer model.
+    """
+    model = SentenceTransformer(model_name)
+    embedding = model.encode(text, convert_to_tensor=True)
+
+    return embedding
+
 
 
 def add_document2collection(embedding_list:list, chromadb_client:chromadb.Client, collection_name:str="my_collection"):
     """
     Add a list of embeddings to the specified ChromaDB collection.
     """
-    collection = chromadb_client.get_or_create_collection(name=collection_name)
+    collection = chromadb_client.get_or_create_collection(name=collection_name, embedding_function=SentenceTransformer("all-MiniLM-L6-v2"))
     
+    # TODO: Loop will be here and give propoer info for each document
     # Add documents to the collection
-    collection.add(
-        documents=[str(i) for i in range(len(embedding_list))],  # Dummy document names
+    collection.upsert(
+        documents=[str(i) for i in range(len(embedding_list[0].metadata["subject"]))],
         embeddings=embedding_list)
     
     print(f"Added {len(embedding_list)} documents to collection '{collection_name}'.") #TODO: write to log file, not print
@@ -20,9 +33,4 @@ def add_document2collection(embedding_list:list, chromadb_client:chromadb.Client
 
 
 if __name__ == "__main__":
-    from pdfHelper import pdf_text2Vec
-    
-    embedding_list = pdf_text2Vec("../data/pdfs/mathematics-10-01555-v2.pdf")
-    chroma_client = chromadb.Client()
-
-    add_document2collection(embedding_list=embedding_list, chromadb_client=chroma_client, collection_name="my_collection")
+    pass
