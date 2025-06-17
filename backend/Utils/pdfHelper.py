@@ -7,12 +7,15 @@ def pdf2chunks(pdf_path:str):
     """
     Load a PDF file and convert to vector embeddings.
     """
+    print("Loading PDF file...")
     loader = PyMuPDFLoader(pdf_path)
     docs = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
 
+    print("PDF file loaded and split into chunks.")
+    
     return chunks
 
 

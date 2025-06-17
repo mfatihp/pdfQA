@@ -194,3 +194,4 @@ cython_debug/
 .cursorindexingignore
 
 data/pdfs
+data/chroma_persistent_db

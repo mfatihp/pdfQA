@@ -1,13 +1,16 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
 
+  
 
-def create_embeddings(text:str, model_name:str="all-MiniLM-L6-v2"):
+def create_embeddings(text:str, model:SentenceTransformer):
     """
     Create embeddings for a given text using the specified SentenceTransformer model.
     """
-    model = SentenceTransformer(model_name)
+    print("Embedding text...")
     embedding = model.encode(text, convert_to_tensor=True)
+
+    print("Embedding created.")
 
     return embedding
 
@@ -17,12 +20,15 @@ def add_document2collection(embedding_list:list, chromadb_client:chromadb.Client
     """
     Add a list of embeddings to the specified ChromaDB collection.
     """
-    collection = chromadb_client.get_or_create_collection(name=collection_name, embedding_function=SentenceTransformer("all-MiniLM-L6-v2"))
+    print("Adding documents to collection...")
+
+    collection = chromadb_client.get_or_create_collection(name=collection_name)
     
     # TODO: Loop will be here and give propoer info for each document
     # Add documents to the collection
     collection.upsert(
-        documents=[str(i) for i in range(len(embedding_list[0].metadata["subject"]))],
+        ids = [f"chunk-{i}" for i in range(len(embedding_list))],
+        documents=[str(embedding_list[i]) for i in range(len(embedding_list))],
         embeddings=embedding_list)
     
     print(f"Added {len(embedding_list)} documents to collection '{collection_name}'.") #TODO: write to log file, not print
