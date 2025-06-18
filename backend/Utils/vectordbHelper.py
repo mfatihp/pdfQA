@@ -8,10 +8,10 @@ def create_embeddings(text:str, model:SentenceTransformer):
     Create embeddings for a given text using the specified SentenceTransformer model.
     """
     print("Embedding text...")
-    embedding = model.encode(text, convert_to_tensor=True)
+    embedding = model.encode(text, convert_to_tensor=True).cpu().numpy()
 
     print("Embedding created.")
-
+    print(type(embedding))
     return embedding
 
 
