@@ -1,6 +1,8 @@
 import chromadb
-from langchain_community.document_loaders import PyMuPDFLoader
+import pymupdf
+# from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
 
 
 
@@ -10,18 +12,23 @@ class LibrarianDB:
         self.collection = self.chroma_client.get_or_create_collection(name="my_collection")
     
 
-    def prepare_files(self, pdf_file:str): # TODO: pdf file will be received from API
-        loader = PyMuPDFLoader(pdf_file)
-        docs = loader.load()
+    def __prepare_files(self, file_bytes: bytes):
+        pdf = pymupdf.open(stream=file_bytes, filetype="pdf")
+
+        docs = []
+        for i, page in enumerate(pdf.pages()):
+            text = page.get_text()
+            metadata = {"page": i + 1}
+            docs.append(Document(page_content=text, metadata=metadata))
 
         splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         chunks = splitter.split_documents(docs)
 
-        documents = [chunk.metadata["subject"] for chunk in chunks]
+        documents = [chunk.page_content for chunk in chunks]
         ids = [str(i) for i in range(len(documents))]
         return ids, documents
 
 
-    def add_documents_to_collection(self, pdf_file):
-        ids, documents = self.prepare_files(self, pdf_file=pdf_file)
+    def add_documents_to_collection(self, pdf_file: bytes):
+        ids, documents = self.__prepare_files(file_bytes=pdf_file)
         self.collection.upsert(ids=ids, documents=documents)
