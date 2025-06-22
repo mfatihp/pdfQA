@@ -1,6 +1,5 @@
 import chromadb
 import pymupdf
-# from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 
