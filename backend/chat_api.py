@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, Request, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from utils.librarian_llm import LibrarianLLM
 from utils.librarian_db import LibrarianDB
 
@@ -9,6 +10,13 @@ app = FastAPI()
 librarian_db = LibrarianDB()
 librarian_llm = LibrarianLLM()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/answer")
@@ -18,7 +26,8 @@ async def answer_question(user_message: Request):
     """
     message = await user_message.json()
     response = librarian_llm.respond(text_input=message["text"])
-    return response
+    reply = {"reply" : response}
+    return reply
 
 
 
