@@ -17,7 +17,7 @@ import { ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 
 export class AppComponent {
   @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   title = 'librarian-ui';
   userInput: string = '';
@@ -25,6 +25,9 @@ export class AppComponent {
 
   pdfSrc: string | Uint8Array | null = null;
   zoom: number = 1.0;
+
+  isUploading: boolean = false;
+  selectedFile: File | null = null;
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -49,23 +52,24 @@ export class AppComponent {
     const text = messageText;
 
     this.http.post<{ reply: string }>('http://localhost:8000/answer', { text })
-    .subscribe({
-      next: (response) => {
-        this.messages.push({ sender: 'bot', text: response.reply });
-        setTimeout(() => this.scrollToBottom(), 100);
-      },
-      error: (err) => {
-        this.messages.push({ sender: 'bot', text: 'Error: could not get a reply.' });
-        console.error(err);
-        setTimeout(() => this.scrollToBottom(), 100);
-      }
-    });
+      .subscribe({
+        next: (response) => {
+          this.messages.push({ sender: 'bot', text: response.reply });
+          setTimeout(() => this.scrollToBottom(), 100);
+        },
+        error: (err) => {
+          this.messages.push({ sender: 'bot', text: 'Error: could not get a reply.' });
+          console.error(err);
+          setTimeout(() => this.scrollToBottom(), 100);
+        }
+      });
   }
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
 
     if (file && file.type === 'application/pdf') {
+      this.selectedFile = file;
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
@@ -75,16 +79,36 @@ export class AppComponent {
       reader.readAsArrayBuffer(file);
     } else {
       this.pdfSrc = null;
-      alert('Lütfen sadece PDF dosyası seçiniz.');
+      alert('Please select a PDF file...');
     }
   }
 
-  afterLoadComplete(pdf: any): void {
-    console.log('PDF başarıyla yüklendi.')
+  afterLoadComplete(): void {
+    console.log('PDF loading is successful.')
   }
 
-  onUploadClick() {
-    // Use it to send pdf to backend
-    console.log('Upload clicked');
+  onUploadClick(): void {
+    if (!this.selectedFile) {
+      alert('Select valid PDF file...');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('pdf_file', this.selectedFile, this.selectedFile.name);
+
+    this.isUploading = true;
+
+    console.log(formData);
+
+    this.http.post('http://localhost:8000/upload', formData).subscribe({
+      next: (res) => {
+        console.log('Upload successful.', res);
+        this.isUploading = false;
+      },
+      error: (err) => {
+        console.error('Upload failed.', err);
+        this.isUploading = false;
+      }
+    });
   }
 }
