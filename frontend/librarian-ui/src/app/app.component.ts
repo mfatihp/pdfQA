@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 
@@ -26,8 +26,9 @@ export class AppComponent {
   pdfSrc: string | Uint8Array | null = null;
   zoom: number = 1.0;
 
+  uploadProgress = 0;
   isUploading: boolean = false;
-  uploadSuccess: boolean = false;
+  uploadComplete: boolean = false;
   selectedFile: File | null = null;
 
   ngAfterViewChecked() {
@@ -67,6 +68,8 @@ export class AppComponent {
   }
 
   onFileSelected(event: any): void {
+    this.uploadComplete = false;
+    this.uploadProgress = 0;
     const file: File = event.target.files[0];
 
     if (file && file.type === 'application/pdf') {
@@ -88,7 +91,6 @@ export class AppComponent {
     console.log('PDF loading is successful.')
   }
 
-  // Upload sırasında gösterilecek bir spinner gerekiyor. Upload edilip edilmediği belli olmuyor. Üst üste basılmasının da önüne geçilmeli
   onUploadClick(): void {
     if (!this.selectedFile) {
       alert('Select valid PDF file...');
@@ -99,21 +101,25 @@ export class AppComponent {
     formData.append('pdf_file', this.selectedFile, this.selectedFile.name);
 
     this.isUploading = true;
-    this.uploadSuccess = false;
 
-    console.log(formData);
-
-    this.http.post('http://localhost:8000/upload', formData).subscribe({
-      next: (res) => {
-        console.log('Upload successful.', res);
-        this.isUploading = false;
-        this.uploadSuccess = true;
-      },
-      error: (err) => {
-        console.error('Upload failed.', err);
-        this.isUploading = false;
-        this.uploadSuccess = false;
-      }
-    });
+    this.http.post('http://127.0.0.1:8000/upload', formData, {
+      reportProgress: true,
+      observe: 'events'
+      }).subscribe({
+        next: (event: HttpEvent<any>) => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            this.uploadProgress = Math.round((event.loaded / event.total) * 100);
+          } else if (event.type === HttpEventType.Response) {
+            this.isUploading = false;
+            this.uploadComplete = true;
+            setTimeout(() => this.uploadComplete = false, 2500); // reset thumbs up
+          }
+        },
+        error: (err) => {
+          console.error('Upload failed', err);
+          this.isUploading = false;
+          this.uploadComplete = false;
+        }
+      });
   }
 }
