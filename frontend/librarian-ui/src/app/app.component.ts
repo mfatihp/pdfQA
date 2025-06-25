@@ -27,6 +27,7 @@ export class AppComponent {
   zoom: number = 1.0;
 
   isUploading: boolean = false;
+  uploadSuccess: boolean = false;
   selectedFile: File | null = null;
 
   ngAfterViewChecked() {
@@ -87,6 +88,7 @@ export class AppComponent {
     console.log('PDF loading is successful.')
   }
 
+  // Upload sırasında gösterilecek bir spinner gerekiyor. Upload edilip edilmediği belli olmuyor. Üst üste basılmasının da önüne geçilmeli
   onUploadClick(): void {
     if (!this.selectedFile) {
       alert('Select valid PDF file...');
@@ -97,6 +99,7 @@ export class AppComponent {
     formData.append('pdf_file', this.selectedFile, this.selectedFile.name);
 
     this.isUploading = true;
+    this.uploadSuccess = false;
 
     console.log(formData);
 
@@ -104,10 +107,12 @@ export class AppComponent {
       next: (res) => {
         console.log('Upload successful.', res);
         this.isUploading = false;
+        this.uploadSuccess = true;
       },
       error: (err) => {
         console.error('Upload failed.', err);
         this.isUploading = false;
+        this.uploadSuccess = false;
       }
     });
   }
