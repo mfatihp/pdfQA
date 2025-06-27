@@ -1,17 +1,18 @@
 # Angular app
 FROM node:alpine3.22 AS build
 
+WORKDIR /app
 
 COPY package.json package-lock.json ./
-
 RUN npm install
 
 COPY . .
-ARG APP_NAME=librarian-ui
+RUN npm run build -- --output-path=./dist --configuration production
 
 # Nginx 
-FROM nginx:alpine
+FROM nginx:mainline-alpine3.22
 
+COPY --from=build /app/dist /usr/share/nginx/html
 
 RUN rm /etc/nginx/conf.d/default.conf
 
