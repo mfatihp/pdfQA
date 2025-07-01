@@ -1,11 +1,9 @@
 import chromadb
 import torch
 import transformers
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
-HF_KEY = os.environ.get("HF_TOKEN")
 
 
 class LibrarianLLM:
@@ -15,8 +13,7 @@ class LibrarianLLM:
         self.pipeline = transformers.pipeline(task="text-generation",
                                               model=self.model_name,
                                               torch_dtype=torch.bfloat16,
-                                              device_map="auto",
-                                              use_auth_token=HF_KEY)
+                                              device_map="auto")
         
         self.chroma_client = chromadb.PersistentClient(path="../data/chroma_persistent_db")
         self.collection = self.chroma_client.get_or_create_collection(name="my_collection")
