@@ -20,33 +20,72 @@ Q&A system for PDF files using lightweight local LLMs, vector search, and an Ang
 </tr>
 </table>
 
+## 📋 Requirements
+
+To run the application, make sure you have the following:
+
+- 🐳 Docker
+- 🤗 Hugging Face API token
+
 ## 🛠️ Installation
 
+Follow these steps to install and run the project:
+
 1. Clone the repository:
-    ```Bash
+    ```bash
     git clone https://github.com/mfatihp/pdfQA.git
     ```
 2. Navigate to the project backend directory:
     ```bash
     cd pdfQA/backend/
     ```
-3. Create your own `.env` file and put inside Huggingface token as `HF_TOKEN="**********"`.
+3. Create a `.env` file in the `backend` folder and add your 🤗 Hugging Face token as:
+    ```env
+    HF_TOKEN="your_huggingface_token_here"
+    ```
 
-<p align="center">
-<img src="docs/pdfQA_env.png" width="250">
-</p>
+    <p align="center">
+    <img src="docs/pdfQA_env.png" width="250">
+    </p>
 
-4. Navigate back to the project directory:
+4. Navigate back to the project root directory:
     ```bash
     cd ..
     ```
 
-5. Build docker container (Need nvidia packages(!Details will be given - work in progress)):
+5. **(Optional)** If you do not want the GPU support, you may delete the marked code block from `docker-compose.yaml` file.
+
+<p align="center">
+<img src="docs/pdfQA_composefile.png" width="400">
+</p>
+
+6. Build docker container:
     ```bash
     sudo docker compose up --build
     ```
 
+
 ## 📈 How To Use
 
-## 🛠️ Built With
+1️⃣ Open your browser and navigate to [http://localhost:80](http://localhost:80).
+
+2️⃣ Click the `Choose file` button to select the PDF you want to upload.
+
+3️⃣ If you would like to add the file to the LLM database for querying, click the `Upload` button.
+
+4️⃣ Once uploaded, start chatting with the bot to ask questions about your PDF.
+
+
+
+## ⚠️ Troubleshooting
+
+Below are common issues you may encounter during installation and their solutions.
+
+### **Missing Dependencies (GPU Support)**
+
+Ensure you have installed the following packages if you want GPU support:
+
+- nvidia-container-toolkit (for GPU support)
+- nvidia-docker2 (for GPU support)
+
 
