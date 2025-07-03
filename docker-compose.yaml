@@ -3,6 +3,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    volumes:
+      - chromadb_data:/app/data/chroma_persistent_db
     deploy:
       resources:
         reservations:
@@ -25,3 +27,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  chromadb_data:

@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Request, UploadFile, File
+from fastapi import FastAPI, Request, UploadFile, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from utils.librarian_llm import LibrarianLLM
 from utils.librarian_db import LibrarianDB
@@ -7,12 +7,29 @@ from utils.librarian_db import LibrarianDB
 
 app = FastAPI()
 
-librarian_db = LibrarianDB()
-librarian_llm = LibrarianLLM()
 
-import torch
-print(torch.cuda.is_available())  # Should print True
-print(torch.cuda.get_device_name(0))  # Prints your GPU name
+librarian_db = None
+librarian_llm = None
+
+def get_db_instance():
+    global librarian_db
+
+    if librarian_db is None:
+        librarian_db = LibrarianDB()
+        print("Librarian_db initialized")
+    
+    return librarian_db
+
+
+def get_llm_instance():
+    global librarian_llm
+    
+    if librarian_llm is None:
+        librarian_llm = LibrarianLLM()
+        print("Librarian_llm initialized")
+    
+    return librarian_llm
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,25 +41,25 @@ app.add_middleware(
 
 
 @app.post("/answer")
-async def answer_question(user_message: Request):
+async def answer_question(user_message: Request, model= Depends(get_llm_instance)):
     """
     Creates llm response using RAG for user 
     """
     message = await user_message.json()
-    response = librarian_llm.respond(text_input=message["text"])
+    response = model.respond(text_input=message["text"])
     reply = {"reply" : response}
     return reply
 
 
 
 @app.post("/upload")
-async def upload_pdf(pdf_file: UploadFile=File(...)): #TODO: add proper file upload and test it 
+async def upload_pdf(pdf_file: UploadFile=File(...), model= Depends(get_db_instance)): #TODO: add proper file upload and test it 
     """
     Uploads pdf files into local chromadb
     """
     print("It started...")
     file_bytes = await pdf_file.read()
-    librarian_db.add_documents_to_collection(pdf_file=file_bytes)
+    model.add_documents_to_collection(pdf_file=file_bytes)
     print("Success...")
 
 

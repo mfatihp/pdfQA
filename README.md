@@ -40,7 +40,7 @@ Follow these steps to install and run the project:
     cd pdfQA/backend/
     ```
 3. Create a `.env` file in the `backend` folder and add your 🤗 Hugging Face token as:
-    ```env
+    ```bash
     HF_TOKEN="your_huggingface_token_here"
     ```
 
@@ -59,11 +59,10 @@ Follow these steps to install and run the project:
 <img src="docs/pdfQA_composefile.png" width="400">
 </p>
 
-6. Build docker container:
+6. Build and run the Docker container. If you don’t require GPU support, you can omit `sudo`:
     ```bash
     sudo docker compose up --build
     ```
-
 
 ## 📈 How To Use
 
@@ -87,5 +86,4 @@ Ensure you have installed the following packages if you want GPU support:
 
 - nvidia-container-toolkit (for GPU support)
 - nvidia-docker2 (for GPU support)
-
 
