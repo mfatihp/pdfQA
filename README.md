@@ -40,7 +40,7 @@ Follow these steps to install and run the project:
     cd pdfQA/backend/
     ```
 3. Create a `.env` file in the `backend` folder and add your 🤗 Hugging Face token as:
-    ```bash
+    ```env
     HF_TOKEN="your_huggingface_token_here"
     ```
 
