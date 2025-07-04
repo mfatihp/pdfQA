@@ -7,6 +7,9 @@ load_dotenv()
 
 
 class LibrarianLLM:
+    """
+    Manages LLM response functionality.
+    """
     def __init__(self):
         self.model_name = "meta-llama/Llama-3.2-1B-Instruct"
 
@@ -22,10 +25,25 @@ class LibrarianLLM:
     
 
     def __query(self, text_input:str):
+        """
+        Creates chroma DB query.
+
+        Args:
+            text_input: user input text to query the chroma DB.
+        """
         self.query_result = self.collection.query(query_texts=text_input, n_results=5)
 
 
     def respond(self, text_input:str):
+        """
+        Creates a response to the user input using the LLM and context from the chroma DB.
+
+        Args:
+            text_input: user input text to generate a response.
+        
+        Returns:
+            output: generated response from the LLM.
+        """
         self.__query(text_input=text_input)
 
         message = [

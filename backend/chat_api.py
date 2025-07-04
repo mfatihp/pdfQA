@@ -12,25 +12,35 @@ librarian_db = None
 librarian_llm = None
 
 def get_db_instance():
+    """
+    Returns LibrarianDB for speed up the initialization of DB class.
+
+    Returns:
+        librarian_db: LibrarianDB instance.
+    """
     global librarian_db
 
     if librarian_db is None:
         librarian_db = LibrarianDB()
-        print("Librarian_db initialized")
     
     return librarian_db
 
 
 def get_llm_instance():
+    """
+    Returns LibrarianLLM for speed up the initialization of LLM class.
+
+    Returns:
+        librarian_llm: LibrarianLLM instance.
+    """
     global librarian_llm
     
     if librarian_llm is None:
         librarian_llm = LibrarianLLM()
-        print("Librarian_llm initialized")
     
     return librarian_llm
 
-
+# Enable Cross-Origin Resource Sharing (CORS) to allow requests.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -43,7 +53,13 @@ app.add_middleware(
 @app.post("/answer")
 async def answer_question(user_message: Request, model= Depends(get_llm_instance)):
     """
-    Creates llm response using RAG for user 
+    Creates llm response using RAG for user question.
+
+    Args:
+        user_message: User's question in JSON format.
+
+    Returns:
+        reply: Chat response to the user's message.
     """
     message = await user_message.json()
     response = model.respond(text_input=message["text"])
@@ -53,9 +69,12 @@ async def answer_question(user_message: Request, model= Depends(get_llm_instance
 
 
 @app.post("/upload")
-async def upload_pdf(pdf_file: UploadFile=File(...), model= Depends(get_db_instance)): #TODO: add proper file upload and test it 
+async def upload_pdf(pdf_file: UploadFile=File(...), model= Depends(get_db_instance)):
     """
-    Uploads pdf files into local chromadb
+    Uploads pdf files into local chroma DB
+
+    Args:
+        pdf_file: 
     """
     print("It started...")
     file_bytes = await pdf_file.read()

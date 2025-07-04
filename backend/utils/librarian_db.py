@@ -6,12 +6,25 @@ from langchain.schema import Document
 
 
 class LibrarianDB:
+    """
+    Manages chroma DB connection and data of pdf files.
+    """
     def __init__(self):
         self.chroma_client = chromadb.PersistentClient(path="../data/chroma_persistent_db")
         self.collection = self.chroma_client.get_or_create_collection(name="my_collection")
     
 
     def __prepare_files(self, file_bytes: bytes):
+        """
+        Reads PDF files and prepares documents
+
+        Args:
+            file_bytes: uploaded PDF file in bytes format
+        
+        Returns:
+            ids: list of document IDs
+            documents: list of chunks' page content
+        """
         pdf = pymupdf.open(stream=file_bytes, filetype="pdf")
 
         docs = []
@@ -29,5 +42,11 @@ class LibrarianDB:
 
 
     def add_documents_to_collection(self, pdf_file: bytes):
+        """
+        Adds documents to the chroma DB collection.
+
+        Args:
+            pdf_file: uploaded PDF file in bytes format
+        """
         ids, documents = self.__prepare_files(file_bytes=pdf_file)
         self.collection.upsert(ids=ids, documents=documents)
