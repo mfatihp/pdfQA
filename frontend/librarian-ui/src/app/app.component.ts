@@ -45,21 +45,26 @@ export class AppComponent {
 
   sendMessage() {
     const messageText = this.userInput.trim();
-    if (!messageText) return;
+    
+    if (!messageText) return; // Ignore empty input
 
+    // Append user's message to chat history
     this.messages.push({ sender: 'user', text: messageText });
     this.userInput = '';
     this.scrollToBottom();
 
     const text = messageText;
 
+    // Send the message to the FastAPI backend and handle the response
     this.http.post<{ reply: string }>('http://localhost:8000/answer', { text })
       .subscribe({
         next: (response) => {
+          // Add the bot's reply to the chat history
           this.messages.push({ sender: 'bot', text: response.reply });
           setTimeout(() => this.scrollToBottom(), 100);
         },
         error: (err) => {
+          // Add an error message to the chat if the backend request fails
           this.messages.push({ sender: 'bot', text: 'Error: could not get a reply.' });
           console.error(err);
           setTimeout(() => this.scrollToBottom(), 100);
@@ -112,7 +117,7 @@ export class AppComponent {
           } else if (event.type === HttpEventType.Response) {
             this.isUploading = false;
             this.uploadComplete = true;
-            setTimeout(() => this.uploadComplete = false, 2500); // reset thumbs up
+            setTimeout(() => this.uploadComplete = false, 2500);
           }
         },
         error: (err) => {
