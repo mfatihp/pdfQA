@@ -106,13 +106,15 @@ export class AppComponent {
     formData.append('pdf_file', this.selectedFile, this.selectedFile.name);
 
     this.isUploading = true;
-
+    
+    // Send the PDF file to the FastAPI backend
     this.http.post('http://127.0.0.1:8000/upload', formData, {
       reportProgress: true,
       observe: 'events'
       }).subscribe({
         next: (event: HttpEvent<any>) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
+            // Loading bar's progess calculation
             this.uploadProgress = Math.round((event.loaded / event.total) * 100);
           } else if (event.type === HttpEventType.Response) {
             this.isUploading = false;
