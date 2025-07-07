@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { ViewChild, ElementRef } from '@angular/core';
 
 
 @Component({
@@ -73,27 +73,28 @@ export class AppComponent {
   }
 
   onFileSelected(event: any): void {
+    // Reset upload state
     this.uploadComplete = false;
     this.uploadProgress = 0;
+    
     const file: File = event.target.files[0];
 
+    // Validate file type
     if (file && file.type === 'application/pdf') {
       this.selectedFile = file;
       const reader = new FileReader();
 
+      // Convert the PDF file to a Uint8Array
       reader.onload = (e: any) => {
         this.pdfSrc = new Uint8Array(e.target.result);
       };
 
       reader.readAsArrayBuffer(file);
     } else {
+      // Clear PDF data variable (pdfSrc) if an invalid file is selected
       this.pdfSrc = null;
       alert('Please select a PDF file...');
     }
-  }
-
-  afterLoadComplete(): void {
-    console.log('PDF loading is successful.')
   }
 
   onUploadClick(): void {
@@ -114,8 +115,10 @@ export class AppComponent {
       }).subscribe({
         next: (event: HttpEvent<any>) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
+            
             // Loading bar's progess calculation
             this.uploadProgress = Math.round((event.loaded / event.total) * 100);
+
           } else if (event.type === HttpEventType.Response) {
             this.isUploading = false;
             this.uploadComplete = true;
