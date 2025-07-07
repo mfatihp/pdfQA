@@ -29,6 +29,8 @@ To run the application, make sure you have the following:
 
 ## 🛠️ Installation
 
+**Note:** This installation guide is prepared for Ubuntu distributions. If you plan to install on a different operating system, please ensure that you adapt the steps accordingly.
+
 Follow these steps to install and run the project:
 
 1. Clone the repository:
