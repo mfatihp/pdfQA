@@ -1,6 +1,8 @@
 # pdfQA
 Q&A system for PDF files using lightweight local LLMs, vector search, and an Angular frontend. Includes full pipeline from document ingestion to answer generation, with FastAPI and Docker support.
 
+<br>
+
 ## 🚀 Features
 
 - 💬 **LLM-Powered Chat:** Interact with a large language model for instant Q&A and conversation.
@@ -8,6 +10,7 @@ Q&A system for PDF files using lightweight local LLMs, vector search, and an Ang
 - 🔍 **PDF Querying:** Ask questions about the uploaded PDF and receive contextual answers.
 - 🎯 **Clean UI:** Minimal and responsive interface for easy interaction.
 
+<br>
 
 ## 📸 Screenshots
 
@@ -20,12 +23,16 @@ Q&A system for PDF files using lightweight local LLMs, vector search, and an Ang
 </tr>
 </table>
 
+<br>
+
 ## 📋 Requirements
 
 To run the application, make sure you have the following:
 
 - 🐳 Docker
 - 🤗 Hugging Face API token
+
+<br>
 
 ## 🛠️ Installation
 
@@ -68,6 +75,7 @@ Follow these steps to install and run the project:
     ```bash
     sudo docker compose up --build
     ```
+<br>
 
 ## 📈 How To Use
 
@@ -82,6 +90,7 @@ Follow these steps to install and run the project:
 <blockquote>
 <b>Note:</b> After installation, the first message you send will trigger the initialization of all models, which may cause a longer wait time.
 </blockquote>
+<br>
 
 ## ⚠️ Troubleshooting
 
